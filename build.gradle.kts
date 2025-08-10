@@ -133,46 +133,9 @@ tasks {
             into("net/minecrell/serverlistplus/core")
         }
     }
-
-    // Universal JAR that works on multiple platforms
-    val universal = register<Jar>("universal") {
-        artifacts.add("archives", this)
-
-        archiveClassifier.set("Universal")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-        manifest.attributes(mapOf("Multi-Release" to true))
-
-        for (p in arrayOf("Bukkit", "Bungee", "Canary", "Sponge", "Velocity")) {
-            val task = project(p).tasks.named("shadowJar")
-            dependsOn(task)
-            from(zipTree(task.map { it.outputs.files.singleFile }))
-        }
-    }
-    artifacts.add("archives", universal)
-
-    // Bundle all sources together into one source JAR
-    named<AbstractCopyTask>("sourcesJar") {
-        subprojects {
-            from(sourceSets["main"].allSource)
-        }
-    }
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            artifact(tasks.named("universal"))
-
-            subprojects {
-                tasks.withType<ShadowJar> {
-                    artifact(this)
-                }
-            }
-        }
-    }
-
     repositories {
         val mavenUrl: String? by project
         val mavenSnapshotUrl: String? by project
