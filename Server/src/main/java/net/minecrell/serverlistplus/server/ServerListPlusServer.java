@@ -172,7 +172,7 @@ public final class ServerListPlusServer implements ServerListPlusPlugin {
         logger.info("Player '{}' tried to log in from {}", name, client);
 
         String message = Randoms.nextEntry(this.loginMessages);
-        return LEGACY_SERIALIZER.deserialize(Literals.replace(message, "%player%", name));
+        return LEGACY_SERIALIZER.deserialize(Literals.replace(Literals.replace(message, "%player%", name), "%ip%", client.getAddress().getAddress().getHostAddress()));
     }
 
     public StatusPingResponse handle(StatusClient client) {
@@ -210,7 +210,7 @@ public final class ServerListPlusServer implements ServerListPlusPlugin {
 
         // Description
         String description = response.getDescription();
-        if (description != null) ping.setDescription(LEGACY_SERIALIZER.deserialize(description));
+        if (description != null) ping.setDescription(LEGACY_SERIALIZER.deserialize(Literals.replace(description, "%ip%", client.getAddress().getAddress().getHostAddress())));
 
         if (version != null) {
             // Version name
